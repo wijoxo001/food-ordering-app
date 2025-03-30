@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Menu</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<h2>Add Menu Items</h2>
+
+<div class="form-step active" id="step2">
+  <label>Menu Items:</label>
+  <div id="menuList">
+    <div class="menu-item">
+      <input type="text" placeholder="Menu Name" class="menuName">
+      <input type="number" placeholder="Price" class="menuPrice">
+    </div>
+  </div>
+  <button class="btn" onclick="addMenuItem()">+ Add Menu Item</button>
+  <button class="btn" onclick="exportToExcel()">Submit & Export</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="menu.js"></script>
+</body>
+</html>
