@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Restaurant Food Ordering</title>
+  <style>
+    /* General styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f8f8;
+      color: #333;
+    }
+    header {
+      background: #e74c3c;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+    /* Menu section styles */
+    .menu-section {
+      flex: 2;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    .category {
+      margin-bottom: 2rem;
+    }
+    .category h2 {
+      border-bottom: 2px solid #e74c3c;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    /* New container to hold two menu items per row */
+    .menu-items-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    /* Each menu item takes roughly half the row */
+    .menu-item {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      flex: 0 0 calc(50% - 0.5rem);
+      box-sizing: border-box;
+    }
+    .menu-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+    }
+    .menu-details {
+      flex: 1;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .menu-details h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .menu-details p {
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+      flex-grow: 1;
+    }
+    .menu-details .price {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .menu-details button {
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .menu-details button:hover {
+      background: #219150;
+    }
+    /* Order summary section styles */
+    .order-section {
+      flex: 1;
+      padding: 1rem;
+      box-sizing: border-box;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      height: fit-content;
+      margin: 1rem;
+    }
+    .order-section h2 {
+      margin-top: 0;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 0.5rem;
+    }
+    .order-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .order-list li {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      padding: 0.5rem 0;
+      align-items: center;
+    }
+    .order-list li span {
+      flex: 1;
+    }
+    .order-list li input[type="number"] {
+      width: 50px;
+      margin-right: 0.5rem;
+    }
+    .order-list li button {
+      background: #c0392b;
+      color: #fff;
+      border: none;
+      padding: 0.3rem 0.5rem;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .order-list li button:hover {
+      background: #a93226;
+    }
+    .order-total {
+      text-align: right;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+    }
+    .checkout-btn {
+      display: block;
+      width: 100%;
+      background: #2980b9;
+      color: #fff;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 3px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .checkout-btn:hover {
+      background: #1f6391;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .order-section {
+        margin: 1rem 0;
+      }
+      .menu-item {
+        flex-direction: column;
+        width: 100%;
+      }
+      .menu-item img {
+        width: 100%;
+        height: auto;
+      }
+      .menu-details {
+        width: 100%;
+      }
+      .menu-items-wrapper {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Restaurant Menu</h1>
+  </header>
+  <div class="container">
+    <!-- Menu Display Section -->
+    <section class="menu-section" id="menu-section">
+      <!-- Dynamic menu categories and items will be rendered here -->
+    </section>
+    <!-- Order Summary Section -->
+    <aside class="order-section">
+      <h2>Your Order</h2>
+      <ul class="order-list" id="order-list">
+        <!-- Ordered items will appear here -->
+      </ul>
+      <div class="order-total" id="order-total">Total: $0.00</div>
+      <button class="checkout-btn" id="checkout-btn">Checkout</button>
+    </aside>
+  </div>
+
+  <script>
+    /***********************
+     * JavaScript Functionality
+     ***********************/
+
+    // Sample menu data categorized by type
+    const menuData = {
+      "Appetizers": [
+        {
+          id: 1,
+          name: "Bruschetta",
+          image: "fried-rice.jpeg",
+          description: "Grilled bread garlic, tomatoes, olive oil.",
+          price: 6.50
+        },
+        {
+          id: 2,
+          name: "Stuffed Mushrooms",
+          image: "https://via.placeholder.com/100",
+          description: "Mushrooms filled with cheese and herbs.",
+          price: 7.00
+        }
+      ],
+      "Main Courses": [
+        {
+          id: 3,
+          name: "Grilled Salmon",
+          image: "https://via.placeholder.com/100",
+          description: "Fresh salmon grilled to perfection.",
+          price: 15.00
+        },
+        {
+          id: 4,
+          name: "Steak Frites",
+          image: "https://via.placeholder.com/100",
+          description: "Juicy steak served with crispy fries.",
+          price: 18.00
+        }
+      ],
+      "Desserts": [
+        {
+          id: 5,
+          name: "Cheesecake",
+          image: "https://via.placeholder.com/100",
+          description: "Creamy cheesecake with a graham cracker crust.",
+          price: 6.00
+        },
+        {
+          id: 6,
+          name: "Chocolate Lava Cake",
+          image: "https://via.placeholder.com/100",
+          description: "Warm chocolate cake with a molten center.",
+          price: 6.50
+        }
+      ],
+      "Drinks": [
+        {
+          id: 7,
+          name: "Fresh Lemonade",
+          image: "https://via.placeholder.com/100",
+          description: "Refreshing homemade lemonade.",
+          price: 3.00
+        },
+        {
+          id: 8,
+          name: "Iced Tea",
+          image: "https://via.placeholder.com/100",
+          description: "Brewed iced tea with a hint of lemon.",
+          price: 2.50
+        }
+      ]
+    };
+
+    // Object to store the current order items
+    const order = {};
+
+    // Function to render the menu on the page
+    function renderMenu() {
+      const menuSection = document.getElementById('menu-section');
+      // Clear any existing content
+      menuSection.innerHTML = '';
+      // Iterate through each category
+      for (const category in menuData) {
+        // Create a section for each category
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'category';
+        const categoryTitle = document.createElement('h2');
+        categoryTitle.textContent = category;
+        categoryDiv.appendChild(categoryTitle);
+
+        // Create a wrapper to hold two menu items per row
+        const itemsWrapper = document.createElement('div');
+        itemsWrapper.className = 'menu-items-wrapper';
+
+        // Create menu item cards for each item in the category
+        menuData[category].forEach(item => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'menu-item';
+
+          // Item image
+          const img = document.createElement('img');
+          img.src = item.image;
+          img.alt = item.name;
+          itemDiv.appendChild(img);
+
+          // Item details
+          const detailsDiv = document.createElement('div');
+          detailsDiv.className = 'menu-details';
+          const itemName = document.createElement('h3');
+          itemName.textContent = item.name;
+          detailsDiv.appendChild(itemName);
+          const itemDesc = document.createElement('p');
+          itemDesc.textContent = item.description;
+          detailsDiv.appendChild(itemDesc);
+          const itemPrice = document.createElement('div');
+          itemPrice.className = 'price';
+          itemPrice.textContent = `$${item.price.toFixed(2)}`;
+          detailsDiv.appendChild(itemPrice);
+
+          // "Add to Order" button
+          const addButton = document.createElement('button');
+          addButton.textContent = "Add to Order";
+          addButton.onclick = () => addToOrder(item);
+          detailsDiv.appendChild(addButton);
+
+          itemDiv.appendChild(detailsDiv);
+          itemsWrapper.appendChild(itemDiv);
+        });
+        categoryDiv.appendChild(itemsWrapper);
+        menuSection.appendChild(categoryDiv);
+      }
+    }
+
+    // Function to add an item to the order
+    function addToOrder(item) {
+      // If item already in order, increase quantity; otherwise, add new entry
+      if (order[item.id]) {
+        order[item.id].quantity += 1;
+      } else {
+        order[item.id] = { ...item, quantity: 1 };
+      }
+      renderOrder();
+    }
+
+    // Function to update the order summary display
+    function renderOrder() {
+      const orderList = document.getElementById('order-list');
+      orderList.innerHTML = ''; // Clear previous order
+      let total = 0;
+
+      // Iterate through the order items
+      for (const id in order) {
+        const orderItem = order[id];
+        total += orderItem.price * orderItem.quantity;
+        const li = document.createElement('li');
+
+        // Display item name and quantity input
+        const itemInfo = document.createElement('span');
+        itemInfo.textContent = `${orderItem.name} ($${orderItem.price.toFixed(2)})`;
+        li.appendChild(itemInfo);
+
+        // Quantity input to update quantity
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'number';
+        qtyInput.min = '1';
+        qtyInput.value = orderItem.quantity;
+        qtyInput.onchange = (e) => updateQuantity(orderItem.id, parseInt(e.target.value));
+        li.appendChild(qtyInput);
+
+        // Remove button to remove the item from order
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = () => removeItem(orderItem.id);
+        li.appendChild(removeBtn);
+
+        orderList.appendChild(li);
+      }
+
+      // Update total display
+      document.getElementById('order-total').textContent = `Total: $${total.toFixed(2)}`;
+    }
+
+    // Function to update quantity of a given item
+    function updateQuantity(id, newQty) {
+      if (newQty <= 0) {
+        removeItem(id);
+      } else {
+        order[id].quantity = newQty;
+      }
+      renderOrder();
+    }
+
+    // Function to remove an item from the order
+    function removeItem(id) {
+      delete order[id];
+      renderOrder();
+    }
+
+    // Function to simulate order checkout (dummy functionality)
+    function checkoutOrder() {
+      if (Object.keys(order).length === 0) {
+        alert("Your order is empty. Please add items before checkout.");
+        return;
+      }
+      // Here you could add code to send the order to your server/kitchen
+      alert("Order submitted! Thank you.");
+      // Reset order after checkout
+      for (const id in order) {
+        delete order[id];
+      }
+      renderOrder();
+    }
+
+    // Set up event listener for the checkout button
+    document.getElementById('checkout-btn').addEventListener('click', checkoutOrder);
+
+    // Initial render of the menu
+    renderMenu();
+  </script>
+</body>
+</html>
